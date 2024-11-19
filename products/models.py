@@ -27,7 +27,7 @@ class Product(models.Model):
     is_digital = models.BooleanField(default=False)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = TreeForeignKey(
-        Category, on_delete=models.SET_NULL, null=True, blank=True
+        "Category", on_delete=models.SET_NULL, null=True, blank=True
     )
 
     def __str__(self):
