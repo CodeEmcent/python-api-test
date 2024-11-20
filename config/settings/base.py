@@ -119,8 +119,17 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'URL_FIELD_NAME': 'url',
+    'DEFAULT_TRAILING_SLASH': False,  # Disable trailing slashes
 }
+
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Ecommerce API',
