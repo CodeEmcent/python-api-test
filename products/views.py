@@ -1,10 +1,15 @@
-from rest_framework import viewsets
-from rest_framework.response import Response
+from django.db import connection
 from drf_spectacular.utils import extend_schema
+from pygments import highlight
+from pygments.formatters import TerminalFormatter
+from pygments.lexers import SqlLexer
+from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.response import Response
+from sqlparse import format
+
 from .models import *
 from .serializers import *
-
 
 # Create your views here.
 class CategoryViewSet(viewsets.ViewSet):
@@ -38,7 +43,21 @@ class ProductViewSet(viewsets.ViewSet):
     A simple ViewSet for viewing all Products
     """
 
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().isactive()
+    lookup_field = "slug"
+    
+    def retrieve(self, request, slug=None):
+        serializer = ProductSerializer(self.queryset.filter(slug=slug).select_related("category", "brand"), many=True,)
+        
+        data = Response(serializer.data)
+
+        q = list(connection.queries)
+        print(len(q))
+        # for qs in q:
+        #     sqlformatted = format(str(qs["sql"]), reindent=True)
+        #     print(highlight(sqlformatted, SqlLexer(), TerminalFormatter()))
+
+        return data
 
     @extend_schema(responses=ProductSerializer)
     def list(self, request):
@@ -49,7 +68,6 @@ class ProductViewSet(viewsets.ViewSet):
         methods=["get"],
         detail=False,
         url_path=r"category/(?P<category>\w+)/all",
-        url_name="__all__",
     )
     def list_product_by_category(self, request, category=None):
         """
@@ -59,3 +77,4 @@ class ProductViewSet(viewsets.ViewSet):
             self.queryset.filter(category__name=category), many=True
         )
         return Response(serializer.data)
+
