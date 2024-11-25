@@ -38,7 +38,7 @@ class OrderField(models.PositiveIntegerField):
             qs = self.model.objects.all()
             try:
                 query = {
-                    self.unique_for_field : getattr(
+                    self.unique_for_field: getattr(
                         model_instance, self.unique_for_field
                     )
                 }
